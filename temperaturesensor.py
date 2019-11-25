@@ -1,7 +1,13 @@
 import spidev
+
+
 class TemperatureSensor:
     def __init__(self, temp_channel = 0):
         self.temp_channel  = temp_channel
+
+        spi = spidev.SpiDev()
+        spi.open(0,0)
+        spi.max_speed_hz=1000000
         
     def ReadChannel(self):
         self.adc = spi.xfer2([1,(8+self.temp_channel)<<4,0])
@@ -10,13 +16,13 @@ class TemperatureSensor:
 
      
     def ConvertVolts(self,data,places):
-      self.volts = (self.data * 3.3) / float(1023)
-      self.volts = round(self.volts,self.places)  
+      self.volts = (data * 3.3) / float(1023)
+      self.volts = round(self.volts,places)  
       return self.volts
       
 
     def ConvertTemp(self,data,places):
-      self.temp = ((self.data * 330)/float(1023))-50
-      self.temp = round(self.temp,self.places)
+      self.temp = ((data * 330)/float(1023))-50
+      self.temp = round(self.temp,places)
       return self.temp
 

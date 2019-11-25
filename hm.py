@@ -15,7 +15,6 @@ health_monitor_key="JVOD9WXB1P4NJBRR"
 #temp_key="VMPNSROP5WNJPZJ3"
 #pulse_rate_key="OV4UT8JRYDWS5B53"
 pause=10
-#pulse_pause=5
 
 SERIAL_PORT="/dev/ttyS0"
 
@@ -23,29 +22,7 @@ ser=serial.Serial(SERIAL_PORT,baudrate=9600,timeout=5)
 p = Pulsesensor()
 p.startAsyncBPM()
 t = TemperatureSensor()
-#temp_channel=0
-        
-spi = spidev.SpiDev()
-spi.open(0,0)
-spi.max_speed_hz=1000000
-'''
-def ReadChannel(channel):
-    adc = spi.xfer2([1,(8+channel)<<4,0])
-    data = ((adc[1]&3) << 8) + adc[2]
-    return data
 
- 
-def ConvertVolts(data,places):
-  volts = (data * 3.3) / float(1023)
-  volts = round(volts,places)  
-  return volts
-  
-
-def ConvertTemp(data,places):
-  temp = ((data * 330)/float(1023))-50
-  temp = round(temp,places)
-  return temp
-'''
 
 def health_monitor():
     delay = 1
@@ -72,17 +49,37 @@ def health_monitor():
             response1=conn1.getresponse()
             response2=conn2.getresponse()
             if bpm > 0 and temp > 0:
-                    #time.sleep(2)
+                    
                     print ("--------------------------------------------"  )
                     print("BPM: %d" % bpm)
                     print("Temp  : {} ({}V) {} deg C".format(temp_level,temp_volts,temp))
-                    time.sleep(10)
+                    time.sleep(60)
                     if (time.time()-start)>pause:
-                        if temp < 22:
-                            if bpm < 70:
+                        if temp < 30:
+                            if bpm < 60:
                                 print("call low bp and low temp")
-                            elif bpm > 150:
+                                '''
+                                ser.write(str.encode('AT+CMGF=1\r'))
+                                print("text mode enabled")
+                                time.sleep(3)
+                                ser.write(str.encode('AT+CMGS="+918970736699"\r'))
+                                msg="HYPOTHERMIA and LOW BP."
+                                time.sleep(3)
+                                ser.write(str.encode(msg+chr(26)))
+                                time.sleep(3)
+                                print("message sent")'''
+                            elif bpm > 110:
                                 print("high bp and low temp")
+                                '''
+                                ser.write(str.encode('AT+CMGF=1\r'))
+                                print("text mode enabled")
+                                time.sleep(3)
+                                ser.write(str.encode('AT+CMGS="+918970736699"\r'))
+                                msg="HYPOTHERMIA and HIGH BP."
+                                time.sleep(3)
+                                ser.write(str.encode(msg+chr(26)))
+                                time.sleep(3)
+                                print("message sent")'''
                             else:
                                 ser.write(str.encode("ATD+918970736699;\r"))
                                 print("Dialling...low_temp")
@@ -95,18 +92,38 @@ def health_monitor():
                                 print("text mode enabled")
                                 time.sleep(3)
                                 ser.write(str.encode('AT+CMGS="+918970736699"\r'))
-                                msg="hello"
+                                msg="HYPOTHERMIA"
                                 time.sleep(3)
                                 ser.write(str.encode(msg+chr(26)))
                                 time.sleep(3)
                                 print("message sent")'''
                     #        break
                     
-                        elif temp > 30:
-                            if bpm < 70:
+                        elif temp > 34:
+                            if bpm < 60:
                                 print("high temp and low bp")
-                            elif bpm>150:
+                                '''
+                                ser.write(str.encode('AT+CMGF=1\r'))
+                                print("text mode enabled")
+                                time.sleep(3)
+                                ser.write(str.encode('AT+CMGS="+918970736699"\r'))
+                                msg="HIGH FEVER and LOW BP."
+                                time.sleep(3)
+                                ser.write(str.encode(msg+chr(26)))
+                                time.sleep(3)
+                                print("message sent")'''
+                            elif bpm>110:
                                 print("high temp and high bp")
+                                '''
+                                ser.write(str.encode('AT+CMGF=1\r'))
+                                print("text mode enabled")
+                                time.sleep(3)
+                                ser.write(str.encode('AT+CMGS="+918970736699"\r'))
+                                msg="HIGH FEVER and HIGH BP."
+                                time.sleep(3)
+                                ser.write(str.encode(msg+chr(26)))
+                                time.sleep(3)
+                                print("message sent")'''
                             else:
                                 ser.write(str.encode("ATD+918970736699;\r"))
                                 print("Dialling...high_temp")
@@ -119,7 +136,7 @@ def health_monitor():
                                 print("text mode enabled")
                                 time.sleep(3)
                                 ser.write(str.encode('AT+CMGS="+918970736699"\r'))
-                                msg="hello"
+                                msg="HIGH FEVER."
                                 time.sleep(3)
                                 ser.write(str.encode(msg+chr(26)))
                                 time.sleep(3)
@@ -127,11 +144,31 @@ def health_monitor():
                             #time.sleep(10)
                      #           break
                     
-                        elif bpm < 70:
-                            if temp < 22:
+                        elif bpm < 60:
+                            if temp < 30:
                                 print("low temp and low bp")
-                            elif temp > 30:
+                                '''
+                                ser.write(str.encode('AT+CMGF=1\r'))
+                                print("text mode enabled")
+                                time.sleep(3)
+                                ser.write(str.encode('AT+CMGS="+918970736699"\r'))
+                                msg="LOW BP and HYPOTHERMIA."
+                                time.sleep(3)
+                                ser.write(str.encode(msg+chr(26)))
+                                time.sleep(3)
+                                print("message sent")'''
+                            elif temp > 34:
                                 print("high temp and low bp")
+                                '''
+                                ser.write(str.encode('AT+CMGF=1\r'))
+                                print("text mode enabled")
+                                time.sleep(3)
+                                ser.write(str.encode('AT+CMGS="+918970736699"\r'))
+                                msg="LOW BP and HIGH FEVER."
+                                time.sleep(3)
+                                ser.write(str.encode(msg+chr(26)))
+                                time.sleep(3)
+                                print("message sent")'''
                             else:
                                 ser.write(str.encode("ATD+918970736699;\r"))
                                 print("Dialling...low_pulse")
@@ -143,18 +180,38 @@ def health_monitor():
                                 print("text mode enabled")
                                 time.sleep(3)
                                 ser.write(str.encode('AT+CMGS="+918970736699"\r'))
-                                msg="hello"
+                                msg="LOW BP"
                                 time.sleep(3)
                                 ser.write(str.encode(msg+chr(26)))
                                 time.sleep(3)
                                 print("message sent")'''
                                 time.sleep(5)
                                 #break
-                        elif bpm >150 :
-                            if temp <22:
+                        elif bpm >110 :
+                            if temp <32:
                                 print("low temp and high bp")
-                            elif temp >30:
+                                '''
+                                ser.write(str.encode('AT+CMGF=1\r'))
+                                print("text mode enabled")
+                                time.sleep(3)
+                                ser.write(str.encode('AT+CMGS="+918970736699"\r'))
+                                msg="HIGH BP and HYPOTHERMIA."
+                                time.sleep(3)
+                                ser.write(str.encode(msg+chr(26)))
+                                time.sleep(3)
+                                print("message sent")'''
+                            elif temp >34:
                                 print("high temp anf high bp")
+                                '''
+                                ser.write(str.encode('AT+CMGF=1\r'))
+                                print("text mode enabled")
+                                time.sleep(3)
+                                ser.write(str.encode('AT+CMGS="+918970736699"\r'))
+                                msg="HIGH BP and HIGH FEVER."
+                                time.sleep(3)
+                                ser.write(str.encode(msg+chr(26)))
+                                time.sleep(3)
+                                print("message sent")'''
                             else:
                                 ser.write(str.encode("ATD+918970736699;\r"))
                                 print("Dialling...high_pulse")
@@ -166,7 +223,7 @@ def health_monitor():
                                 print("text mode enabled")
                                 time.sleep(3)
                                 ser.write(str.encode('AT+CMGS="+918970736699"\r'))
-                                msg="hello"
+                                msg="HIGH BP."
                                 time.sleep(3)
                                 ser.write(str.encode(msg+chr(26)))
                                 time.sleep(3)
@@ -178,7 +235,18 @@ def health_monitor():
                     time.sleep(5)
                     if (time.time()-start)>5 and bpm == 0 or temp < 0:
                         print("No Heartbeat found %d" % bpm)
-                        print("Temp  : {} ({}V) {} deg C".format(temp_level,temp_volts,temp)) 
+                        print("Temp  : {} ({}V) {} deg C".format(temp_level,temp_volts,temp))
+                        '''
+                                ser.write(str.encode('AT+CMGF=1\r'))
+                                print("text mode enabled")
+                                time.sleep(3)
+                                ser.write(str.encode('AT+CMGS="+918970736699"\r'))
+                                msg="EMERGENCY.Critical Condition."
+                                time.sleep(3)
+                                ser.write(str.encode(msg+chr(26)))
+                                time.sleep(3)
+                                print("message sent")'''
+                        
                   
                     #time.sleep(3)
             #print(response1.status,response1.reason,response2.status,response2.reason)
@@ -199,20 +267,3 @@ if __name__=="__main__":
     while True:
         health_monitor()
 
-'''
-SERIAL_PORT="/dev/ttyS0"
-ser=serial.Serial(SERIAL_PORT,baudrate=9600,timeout=5)
-ser.write(str.encode("ATD+918970736699;\r"))
-print("Dialling...")
-time.sleep(10)
-ser.write(str.encode("ATH\r"))
-print("HAnging up")
-ser.write(str.encode('AT+CMGF=1\r'))
-print("text mode enabled")
-time.sleep(3)
-ser.write(str.encode('AT+CMGS="+918970736699"\r'))
-msg="hello"
-time.sleep(3)
-ser.write(str.encode(msg+chr(26)))
-time.sleep(3)
-print("message sent")'''
